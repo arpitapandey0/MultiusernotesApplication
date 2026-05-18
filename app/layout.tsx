@@ -20,7 +20,7 @@ export default function RootLayout({
     return (
       <html lang="en">
         <body style={{ padding: '20px', background: 'white' }}>
-          <h1 style={{ color: 'red' }}>Error: Clerk key missing</h1>
+          <h1 style={{ color: 'green' }}>Error: Clerk key missing</h1>
           <p style={{ color: 'black' }}>Add NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY to .env.local</p>
         </body>
       </html>
