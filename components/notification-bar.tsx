@@ -43,15 +43,18 @@ export default function NotificationBar() {
 
   const handleAccept = async (notification: Notification) => {
     try {
-      // First update Firebase to add collaborator
       await handleShareAccept(notification.noteId, notification.recipientEmail);
-      
-      // Then update notification status
-      await fetch(`http://localhost:8081/api/notifications/${notification.id}/accept`, {
+
+      const response = await fetch(`http://localhost:8081/api/notifications/${notification.id}/accept`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userEmail: user?.emailAddresses[0]?.emailAddress })
       });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Failed to accept share request');
+      }
       
       toast.success('Share request accepted!');
       fetchNotifications();
@@ -63,11 +66,16 @@ export default function NotificationBar() {
 
   const handleReject = async (notification: Notification) => {
     try {
-      await fetch(`http://localhost:8081/api/notifications/${notification.id}/reject`, {
+      const response = await fetch(`http://localhost:8081/api/notifications/${notification.id}/reject`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userEmail: user?.emailAddresses[0]?.emailAddress })
       });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Failed to reject share request');
+      }
       
       toast.success('Share request rejected');
       fetchNotifications();

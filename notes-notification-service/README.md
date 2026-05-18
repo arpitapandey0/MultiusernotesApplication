@@ -1,60 +1,85 @@
-# Notes Notification Service
+# Collaborative Notes App
 
-Spring Boot service for handling note sharing notifications with real-time updates.
+A modern, real-time collaborative note-taking application built with Next.js, Firebase, and Clerk.
 
 ## Features
-- Share request notifications
-- Accept/Reject functionality  
-- Real-time WebSocket notifications
-- Sender notification on response
+
+- 📝 Rich text editor with formatting
+- 👥 Real-time collaboration
+- 💬 Comments system
+- 📜 Version history
+- 🔐 Secure authentication
+- 🌓 Dark mode support
+- 📱 Responsive design
+- 🔍 Search & filter
+- 🚀 Auto-save
 
 ## Quick Start
 
 ```bash
-# Run the service
-cd notes-notification-service
-mvn spring-boot:run
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
 ```
 
-Service runs on http://localhost:8080
+Open [http://localhost:3000](http://localhost:3000)
 
-## API Endpoints
+## Environment Variables
 
-### Create Share Request
-```
-POST /api/notifications/share-request
-{
-  "recipientEmail": "user@example.com",
-  "senderEmail": "sender@example.com", 
-  "noteId": "note123",
-  "noteTitle": "My Note"
-}
-```
+Create `.env.local`:
 
-### Accept Share Request
-```
-POST /api/notifications/{id}/accept
-{
-  "userEmail": "user@example.com"
-}
+```env
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_key
+CLERK_SECRET_KEY=your_clerk_secret
+NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_domain
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_bucket
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 ```
 
-### Reject Share Request
+## Tech Stack
+
+- **Framework**: Next.js 15
+- **Auth**: Clerk
+- **Database**: Firebase Firestore
+- **Editor**: TipTap
+- **Styling**: Tailwind CSS
+- **UI**: Radix UI
+
+## Project Structure
+
 ```
-POST /api/notifications/{id}/reject
-{
-  "userEmail": "user@example.com"
-}
+app/
+  ├── create/          # Create note page
+  ├── note/[id]/       # Edit note page
+  └── page.tsx         # Home/Dashboard
+components/
+  ├── ui/              # UI components
+  ├── dashboard.tsx    # Main dashboard
+  ├── note-editor.tsx  # Rich text editor
+  └── ...
+lib/
+  ├── firebase.ts      # Firebase config
+  └── noteUtils.ts     # Helper functions
 ```
 
-### Get User Notifications
-```
-GET /api/notifications/user/{email}
+## Available Scripts
+
+```bash
+npm run dev      # Start development server
+npm run build    # Build for production
+npm start        # Start production server
+npm run lint     # Run ESLint
 ```
 
-## WebSocket Connection
-Connect to: `ws://localhost:8080/ws-notifications`
-Subscribe to: `/user/queue/notifications`
+## Features Documentation
 
-## Integration
-Add the NotificationBar component to your Next.js Header component and use the shareNote function when sharing notes.
+See [FEATURES.md](FEATURES.md) for complete feature list.
+
+## License
+
+MIT

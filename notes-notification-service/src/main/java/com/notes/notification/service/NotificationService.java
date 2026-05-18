@@ -1,5 +1,8 @@
 package com.notes.notification.service;
 
+import com.google.cloud.firestore.FieldValue;
+import com.google.cloud.firestore.Firestore;
+import com.google.cloud.firestore.SetOptions;
 import com.notes.notification.entity.Notification;
 import com.notes.notification.entity.NotificationType;
 import com.notes.notification.entity.NotificationStatus;
@@ -8,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class NotificationService {
@@ -18,6 +23,9 @@ public class NotificationService {
     
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
+
+    @Autowired
+    private Firestore firestore;
 
     public Notification createShareRequest(String recipientEmail, String senderEmail, String noteId, String noteTitle) {
         Notification notification = new Notification(recipientEmail, senderEmail, noteId, noteTitle, 
@@ -32,17 +40,21 @@ public class NotificationService {
 
     public void acceptShareRequest(Long notificationId, String userEmail) {
         Notification notification = notificationRepository.findById(notificationId).orElseThrow();
+        String normalizedUserEmail = userEmail == null ? "" : userEmail.trim().toLowerCase();
         
-        if (!notification.getRecipientEmail().equals(userEmail)) {
+        if (!notification.getRecipientEmail().equalsIgnoreCase(normalizedUserEmail)) {
             throw new RuntimeException("Unauthorized");
         }
         
         notification.setStatus(NotificationStatus.ACCEPTED);
         notification.setRespondedAt(LocalDateTime.now());
         notificationRepository.save(notification);
-        
-        // TODO: Add Firebase integration to actually share the note
-        // This would require Firebase Admin SDK to update the note document
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("collaboratorEmails", FieldValue.arrayUnion(normalizedUserEmail));
+        firestore.collection("notes")
+                .document(notification.getNoteId())
+                .set(updates, SetOptions.merge());
         
         // Notify sender
         Notification senderNotification = new Notification(

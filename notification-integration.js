@@ -18,7 +18,7 @@ export default function NotificationBar() {
     fetchNotifications();
 
     // Setup WebSocket connection
-    const ws = new WebSocket('ws://localhost:8080/ws-notifications');
+    const ws = new WebSocket('ws://localhost:8081/ws-notifications');
     setSocket(ws);
 
     ws.onmessage = (event) => {
@@ -31,13 +31,13 @@ export default function NotificationBar() {
 
   const fetchNotifications = async () => {
     const email = user?.emailAddresses[0]?.emailAddress;
-    const response = await fetch(`http://localhost:8080/api/notifications/user/${email}`);
+    const response = await fetch(`http://localhost:8081/api/notifications/user/${email}`);
     const data = await response.json();
     setNotifications(data);
   };
 
   const handleAccept = async (notificationId) => {
-    await fetch(`http://localhost:8080/api/notifications/${notificationId}/accept`, {
+    await fetch(`http://localhost:8081/api/notifications/${notificationId}/accept`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userEmail: user?.emailAddresses[0]?.emailAddress })
@@ -46,7 +46,7 @@ export default function NotificationBar() {
   };
 
   const handleReject = async (notificationId) => {
-    await fetch(`http://localhost:8080/api/notifications/${notificationId}/reject`, {
+    await fetch(`http://localhost:8081/api/notifications/${notificationId}/reject`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userEmail: user?.emailAddresses[0]?.emailAddress })
@@ -55,7 +55,7 @@ export default function NotificationBar() {
   };
 
   const shareNote = async (recipientEmail, noteId, noteTitle) => {
-    await fetch('http://localhost:8080/api/notifications/share-request', {
+    await fetch('http://localhost:8081/api/notifications/share-request', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
